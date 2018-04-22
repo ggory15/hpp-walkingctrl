@@ -1,0 +1,54 @@
+interface_variables:
+
+ MAX_TEST_DURATION: 2000
+ dt: 1e-3
+ q0: [0.0 ,  0.0,  0.63,  0.  , -0.  ,  0.  ,  1.  , -0.51,  0.74, -0.93, -0.18, -0.38,  1.35, -0.36,  0.89, -1.19, -0.3 ,  0.19, 0.79]
+
+# Controller Configuration #	
+ ENABLE_CAPTURE_POINT_LIMITS: False
+ ENABLE_TORQUE_LIMITS: True
+ ENABLE_FORCE_LIMITS: True
+ ENABLE_JOINT_LIMITS: True
+ IMPOSE_POSITION_BOUNDS: True
+ IMPOSE_VELOCITY_BOUNDS: True
+ IMPOSE_VIABILITY_BOUNDS: True
+ IMPOSE_ACCELERATION_BOUNDS: True
+ JOINT_POS_PREVIEW: 1.5 # preview window to convert joint pos limits into joint acc limits
+ JOINT_VEL_PREVIEW: 1  # preview window to convert joint vel limits into joint acc limits
+ MAX_JOINT_ACC: 20.0
+ MAX_MIN_JOINT_ACC: 20.0
+ USE_JOINT_VELOCITY_ESTIMATOR: False
+ ACCOUNT_FOR_ROTOR_INERTIAS: True
+
+ kp_posture: 30.0 #1.0;   # proportional gain of postural task
+ #kd_posture  = 2*sqrt(kp_posture);
+ kp_constr: 100.0   # constraint proportional feedback gain
+ #kd_constr   = 2*sqrt(kp_constr);   # constraint derivative feedback gain
+ kp_com: 30.0
+ #kd_com      = 2*sqrt(kp_com);
+
+ w_com: 1e-1     # weight of the CoM task
+ w_posture: 1e-4     # weight of postural task
+
+ maxIter: 300      # max number of iterations
+ maxTime: 0.8      # max computation time for the solver in seconds
+ verb: 0            # verbosity level (0, 1, or 2)
+
+ fMin: 0.0
+ mu: [0.4, 0.1]	
+ DEFAULT_CONTACT_POINTS: [0, 0, 0]
+ DEFAULT_CONTACT_NORMALS: [0, 0, 1]
+ constraint_mask: [1, 1, 1, 0, 0, 0] 	 
+
+# STOPPING CRITERIA THRESHOLDS
+ MAX_COM_VELOCITY: 5
+ MAX_CONSTRAINT_ERROR: 0.1
+
+# STORING
+ SAVE: True
+       
+
+
+
+
+
