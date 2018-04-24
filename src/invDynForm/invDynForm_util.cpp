@@ -246,8 +246,6 @@ namespace hpp{
 
             if (gain < 0.0)
                 cout << "WARN::Wrong w_gain" << endl;
-
-            cout << taskstate_.size() << endl;
         }
 
 

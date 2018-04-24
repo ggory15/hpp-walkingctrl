@@ -34,6 +34,7 @@ using hpp::pinocchio::Device;
 using hpp::pinocchio::DevicePtr_t;
 
 #include "hpp/walkingctrl/invDynForm/invDynForm_util.hpp"
+#include "hpp/walkingctrl/simulator/simulator.hpp"
 
 
 #include <boost/test/unit_test.hpp>
@@ -47,7 +48,7 @@ void test(){
   //setupHumanoidRobot (robot, "");
 
   std::string cfg_file = TEST_PATH + std::string("example_setting.yaml");
-  std::cout << "Path :" << " " << cfg_file << std::endl; 
+
   InterfaceSetting interface_setting;
   interface_setting.initialize(cfg_file);
 
@@ -64,6 +65,9 @@ void test(){
   JointPostureTask com_task("com_traj", com_ref);
   com_task.setgain(interface_setting.get(InterfaceDoubleParam_kp_com), interface_setting.get(InterfaceDoubleParam_kd_com));
   invDynForm_.addTask(com_task, interface_setting.get(InterfaceDoubleParam_w_com));
+
+  Simulator simulator_(hyq);
+  simulator_.createSimulator(interface_setting);
 }
 
 BOOST_AUTO_TEST_CASE ( build_model )

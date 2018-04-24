@@ -65,9 +65,14 @@ SET(${PROJECT_NAME}HEADERS
   include/hpp/walkingctrl/fwd.hh
 
   include/hpp/walkingctrl/solver/StandardQpSolver.hh
+  include/hpp/walkingctrl/solver/abstractsolver.hh
+  
   include/hpp/walkingctrl/solver/solver-base.hh
   include/hpp/walkingctrl/solver/solver-HQP-output.hpp
   include/hpp/walkingctrl/solver/basic-qpoase.hpp
+  include/hpp/walkingctrl/solver/staggered_projections.hpp
+
+  
 
   include/hpp/walkingctrl/math/constraint-base.hpp
   include/hpp/walkingctrl/math/constraint-bound.hpp
@@ -75,6 +80,7 @@ SET(${PROJECT_NAME}HEADERS
   include/hpp/walkingctrl/math/constraint-inequality.hpp
   include/hpp/walkingctrl/math/fwd.hpp
   include/hpp/walkingctrl/math/utils.hpp
+  
 
   include/hpp/walkingctrl/utils/stop-watch.hpp
   include/hpp/walkingctrl/utils/stastics.hpp
@@ -87,17 +93,18 @@ SET(${PROJECT_NAME}HEADERS
 
  # include/hpp/walkingctrl/invDynForm/fwd.hh
   include/hpp/walkingctrl/invDynForm/invDynForm_util.hh  
+  include/hpp/walkingctrl/simulator/simulator.hpp
 
   include/hpp/walkingctrl/trajectory/trajectory.hh
   include/hpp/walkingcrl/task/task.hh
+
+
 
 )
 
 
 
 ADD_SUBDIRECTORY(src)
-
-
 
 get_filename_component(TEST_PATH config ABSOLUTE)
 add_subdirectory(test)

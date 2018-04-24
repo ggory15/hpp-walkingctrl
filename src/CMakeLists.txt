@@ -36,6 +36,7 @@ SET(${LIBRARY_NAME}_SOURCES
    interface/Setting.cpp
 
    invDynForm/invDynForm_util.cpp
+   simulator/simulator.cpp
   )
 
 ADD_LIBRARY(${LIBRARY_NAME}

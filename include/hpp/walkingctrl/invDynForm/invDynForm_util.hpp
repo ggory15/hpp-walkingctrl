@@ -64,11 +64,8 @@ namespace hpp{
         void setNewSensorData(const double& t, const vector_t& q, const vector_t& v);
         void setPositions(const vector_t& q, bool updateConstraintReference = true);
         inline void setVelocities(const vector_t& v){ v_ = v;};
-        void getDynamics();
+        void getDynamics();   
         
-        
-       
-
       private:
         InterfaceSetting* interface_setting_;
 
