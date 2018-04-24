@@ -21,7 +21,6 @@
 
 # include <vector>
 # include <Eigen/Core>
-# include <hpp/pinocchio/fwd.hh>
 # include <hpp/core/fwd.hh>
 # include <hpp/walkingctrl/config.hh>
 
@@ -38,26 +37,16 @@ namespace hpp {
     typedef Eigen::Matrix <value_type, 3, 1> vector3_t;
     typedef Eigen::Matrix <value_type, 3, 3> matrix3_t;
 
-    typedef core::Transform3f Transform3f;
-    typedef core::Path Path;
-    typedef core::PathPtr_t PathPtr_t;
-    typedef core::PathVectorPtr_t PathVectorPtr_t;
-    typedef core::PathVector PathVector;
-    typedef core::ConfigurationOut_t ConfigurationOut_t;
-    typedef core::Configuration_t Configuration_t;
-    typedef core::ConstraintSetPtr_t ConstraintSetPtr_t;
-    typedef core::DevicePtr_t DevicePtr_t;
+    typedef hpp::core::Transform3f Transform3f;
+    typedef hpp::core::Path Path;
+    typedef hpp::core::PathPtr_t PathPtr_t;
+    typedef hpp::core::PathVectorPtr_t PathVectorPtr_t;
+    typedef hpp::core::PathVector PathVector;
+    typedef hpp::core::ConfigurationOut_t ConfigurationOut_t;
+    typedef hpp::core::Configuration_t Configuration_t;
+    typedef hpp::core::ConstraintSetPtr_t ConstraintSetPtr_t;
+    typedef hpp::core::DevicePtr_t DevicePtr_t;
     typedef Eigen::Quaternion<double> quaternion_t;
-
-    typedef pinocchio::CenterOfMassComputationPtr_t CenterOfMassComputationPtr_t;
-
-    typedef pinocchio::JointPtr_t JointPtr_t;
-    typedef pinocchio::DevicePtr_t DevicePtr_t;
-    typedef pinocchio::HumanoidRobotPtr_t HumanoidRobotPtr_t;
-    typedef pinocchio::HumanoidRobot HumanoidRobot;
-    typedef pinocchio::LiegroupElement LiegroupElement;
-    typedef pinocchio::LiegroupSpace LiegroupSpace;
-    typedef pinocchio::LiegroupSpacePtr_t LiegroupSpacePtr_t;
 
   } // namespace walingctrl
 } // namespace hpp

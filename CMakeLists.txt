@@ -50,7 +50,17 @@ IF (HPP_DEBUG)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
 ENDIF()
 
+SEARCH_FOR_BOOST ()
+
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+
+ADD_REQUIRED_DEPENDENCY("yaml-cpp >= 0.5")
+ADD_REQUIRED_DEPENDENCY("hpp-core >= 4")
+ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 4")
+ADD_REQUIRED_DEPENDENCY("hpp-statistics >= 1.1")
+ADD_REQUIRED_DEPENDENCY("qpOASES")
+
+
 SET(${PROJECT_NAME}HEADERS
   include/hpp/walkingctrl/fwd.hh
 
@@ -74,20 +84,20 @@ SET(${PROJECT_NAME}HEADERS
   include/hpp/walkingctrl/interface/Setting.hpp
   include/hpp/walkingctrl/interface/Definitions.hpp
   include/hpp/walkingctrl/interface/InterfaceParam.hpp
+
+ # include/hpp/walkingctrl/invDynForm/fwd.hh
+  include/hpp/walkingctrl/invDynForm/invDynForm_util.hh  
+
+  include/hpp/walkingctrl/trajectory/trajectory.hh
+  include/hpp/walkingcrl/task/task.hh
+
 )
 
-ADD_REQUIRED_DEPENDENCY("yaml-cpp >= 0.5")
-ADD_REQUIRED_DEPENDENCY("eigen3 >= 3.2")
-ADD_REQUIRED_DEPENDENCY("hpp-util >= 3")
-ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 4")
-ADD_REQUIRED_DEPENDENCY("hpp-pinocchio >= 4")
-ADD_REQUIRED_DEPENDENCY("pinocchio")
-ADD_REQUIRED_DEPENDENCY("hpp-core >= 4")
-ADD_REQUIRED_DEPENDENCY("qpOASES")
 
-SEARCH_FOR_BOOST ()
 
 ADD_SUBDIRECTORY(src)
+
+
 
 get_filename_component(TEST_PATH config ABSOLUTE)
 add_subdirectory(test)
