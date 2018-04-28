@@ -1,4 +1,5 @@
-# include <hpp/walkingctrl/invDynForm/invDynForm_util.hpp>
+#include <hpp/walkingctrl/invDynForm/invDynForm_util.hpp>
+#include <hpp/walkingctrl/utils/convex_hull_util.hh>
 
 using namespace std;
 
@@ -24,6 +25,9 @@ namespace hpp{
            use_max_joint_acc_ = interface_setting_->get(InterfaceBoolParam_IMPOSE_ACCELERATION_BOUNDS);
            use_vel_estimator_ = interface_setting_->get(InterfaceBoolParam_USE_JOINT_VELOCITY_ESTIMATOR);
            use_rotor_initia_ = interface_setting_->get(InterfaceBoolParam_ACCOUNT_FOR_ROTOR_INERTIAS);
+
+           mu_ = interface_setting_->get(InterfaceVectorParam_mu);
+           fmin_ = interface_setting_->get(InterfaceDoubleParam_fmin);
 
            support_polygon_computed_ = false;
 
@@ -58,7 +62,6 @@ namespace hpp{
                 qMin_(i)  = -1e100;
             }
 
-            contact_points_ = vector3_t::Zero();
             this->updateInequalityData(false);
             this->setNewSensorData(0, q, v);
         }
@@ -134,16 +137,39 @@ namespace hpp{
         void InvDynForm::updateSupportPolygon(){
             //TODO-ggory igetVsize()dyan_formulation_util line 330~344
             int ncp = 0;
-            contact_points_ = vector3_t::Zero();
-            contact_normal_ = vector3_t::Zero();
-            int i = 0;
+            ncp = rigidContactConstraints_p_.size();
+            vector_t mu_s;
+
+            if (ncp > 0){
+                contact_points_.resize(3, ncp);
+                contact_normals_.resize(3, ncp);                
+                mu_s.resize(ncp);
+            }
+
+            for (int j=0; j< ncp; j++){
+                Transform3f oMi = getFrameTransformation(rigidContactConstraints_[j].getID());
+                contact_points_.col(j) = oMi.act(rigidContactConstraints_p_[j]);
+                contact_normals_.col(j) = oMi.rotation() * rigidContactConstraints_N_[j];
+                mu_s(j) =  rigidContactConstraints_mu_[j](0);
+            }
 
             if (ncp == 0){
-               // cout << "Init Polygon" << endl;
+               
             }
             else{
-               //TODO
+                //double avg_z = contact_points_.row(2).mean();
+                
+                /*if ( max(contact_points_.row(2).maxCoeff() - avg_z, abs(contact_points_.row(2).minCoeff() - avg_z)) < 1e-3) 
+                {
+                    
+                }
+                */            
             }
+            if (ncp == 4){
+                cout << "GIWC" << endl; 
+
+            }
+            support_polygon_computed_ = true;
 
         }
         void InvDynForm::computeConstraintTask(const double& t, matrix_t& A, vector_t& a){
@@ -215,12 +241,24 @@ namespace hpp{
                 cout << "WARN::Wrong w_gain" << endl;
         }
         bool InvDynForm::existUnilateralContactConstraint(const std::string name){
-             for (vector<contacts::ContactInformation>::iterator iter = rigidContactConstraints_.begin(); iter != rigidContactConstraints_.end(); ++iter){
-                if (name.compare(iter->getName()))
+             for (vector<SE3Task>::iterator iter = rigidContactConstraints_.begin(); iter != rigidContactConstraints_.end(); ++iter){
+                if (name.compare(iter->getName()) == 0){
+                    cout <<"name1" << name << endl;
+                    cout <<"name2" << iter->getName() << endl;
                     return true;
+                }
             }
 
             return false;
         }
+        void InvDynForm::addUnilateralContactConstraint(const SE3Task& constr, const vector3_t& contact_point, const vector3_t& contact_normal){
+            rigidContactConstraints_.push_back(constr);
+            rigidContactConstraints_p_.push_back(contact_point);
+            rigidContactConstraints_N_.push_back(contact_normal);
+            rigidContactConstraints_fMin_.push_back(fmin_);
+            rigidContactConstraints_mu_.push_back(mu_);
+            this->updateSupportPolygon();
+        }
+
     }//walkingctrl
 }//hpp`

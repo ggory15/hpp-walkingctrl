@@ -52,8 +52,9 @@ namespace hpp{
 
         std::vector<std::string> getContactSet() {return contact_names_;}
         bool existUnilateralContactConstraint(const std::string name);
-        void addContact(const std::string & name){contact_names_.push_back(name);}
+        void addUnilateralContactConstraint(const SE3Task& constr, const vector3_t& contact_point, const vector3_t& contact_normal);
 
+        void addContact(const std::string & name){contact_names_.push_back(name);}
       
       private:
 
@@ -74,22 +75,27 @@ namespace hpp{
         InterfaceSetting* interface_setting_;
 
         int k_, m_in_; 
-        double dt_, t_;
+        double dt_, t_, fmin_;
         bool use_com_gen_, enableCapturePoint_, enableTorqueLimit_, enableForceLimit_, enableJointLimit_, use_pos_preview_, use_vel_preview_, use_max_joint_acc_, use_vel_estimator_, use_rotor_initia_,
              support_polygon_computed_;
-        vector_t q0_, v0_, q_res_, v_res_, qMin_, qMax_, tauMax_, dqMax_, ddqMax_, ddqStop_, contact_points_, contact_normal_, b_sp_, lb_, ub_, b_;
+        vector_t q0_, v0_, q_res_, v_res_, qMin_, qMax_, tauMax_, dqMax_, ddqMax_, ddqStop_,  b_sp_, lb_, ub_, b_;
         matrix_t Md_, S_T_, Nc_T_, B_sp_, B_;
 
         vector_t dJc_v_, dx_c_, ddx_c_des_, c_;
         matrix_t Jc_, Jc_Minv_, Lambda_c_, Jc_T_pinv_, C_;
 
-        vector2_t cp_;
+        vector2_t cp_, mu_;
         vector3_t com_;
         matrix_t J_com_, M_, h_, Minv_;
         vector_t dx_com_;
+
+        matrix_t contact_points_, contact_normals_;
         
         Eigen::VectorXi index_acc_in_, index_cp_in_, index_task_constr;
-        std::vector<contacts::ContactInformation> rigidContactConstraints_;
+        std::vector<SE3Task> rigidContactConstraints_;
+        std::vector<vector3_t> rigidContactConstraints_p_, rigidContactConstraints_N_;
+        std::vector<double> rigidContactConstraints_fMin_;
+        std::vector<vector2_t> rigidContactConstraints_mu_;
 
         std::vector<JointPostureTask> taskstate_; 
         std::vector<double> w_gain_;   

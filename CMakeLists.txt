@@ -86,6 +86,7 @@ SET(${PROJECT_NAME}HEADERS
   include/hpp/walkingctrl/utils/stop-watch.hpp
   include/hpp/walkingctrl/utils/stastics.hpp
   include/hpp/walkingctrl/utils/Stdafx.hh
+  include/hpp/walkingctrl/utils/convex_hull_util.hh
 
   include/hpp/walkingctrl/yaml_eigen.h
   include/hpp/walkingctrl/interface/Setting.hpp

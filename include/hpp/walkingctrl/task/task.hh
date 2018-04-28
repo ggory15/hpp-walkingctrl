@@ -27,20 +27,25 @@ namespace hpp{
             public: 
                 SE3Task(const DevicePtr_t & robot, const int & id, Transform3f& oMi, const std::string & name) : ConstantSE3Trajectory(name, oMi){
                     r_ = robot;
-
+                    name_ = name;
                     for (int i=0; i<3; i++)
                         masks_.push_back(true);
                     for (int i=0;i<3;i++)
                         masks_.push_back(false);
+                    id_ = id;
                 }
                 ~SE3Task(){}; 
                 inline void setgain(const double& kp, const double& kv) {kp_ = kp; kv_ = kv;};
+                std::string getName() {return name_;}
+                int getID() {return id_;}
 
             private:
                 DevicePtr_t r_;
                 double kp_;
                 double kv_;
+                std::string  name_;
                 std::vector<bool> masks_;
+                int id_;
         };
     }
 }

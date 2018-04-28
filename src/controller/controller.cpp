@@ -1,4 +1,3 @@
-
 #include <hpp/walkingctrl/controller/controller.hh>
 
 using namespace std;
@@ -53,8 +52,9 @@ namespace hpp{
                 cout << "Adding Contact:" << " " <<  *iter  << ",  " <<  "contact vel:" <<"   " << invdyn_->getFrameVeolocity(fid).head(3).transpose() << endl;
 
                 Ni_ = oMi.rotation().transpose() * invdyn_->getSetting().get(InterfaceVectorParam_DEFAULT_CONTACT_NORMALS);   
-                cout << "Contact Point in World Frame" << " " << oMi.act(Pi_).transpose() << " " << Ni_ << endl;
+                cout << "Contact Point in World Frame" << " " << oMi.act(Pi_).transpose() << endl;
 
+                invdyn_->addUnilateralContactConstraint(constr, Pi_, Ni_);
             }
             return contact_changed;
         }
