@@ -3,7 +3,7 @@
 
 namespace hpp{
     namespace walkingctrl{
-        namespace solver{
+        namespace solvers{
         class StaggeredProjections{
             public:
                 StaggeredProjections(const int & nv, const double & mu, const double& eps = 0.001, const int& verb = 0){};

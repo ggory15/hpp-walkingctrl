@@ -23,6 +23,7 @@ SET(${LIBRARY_NAME}_SOURCES
 #  solver/StandardQpSolver.cpp
    solver/solver-base.cpp
    solver/basic-qpoase.cpp
+   solver/abstractsolver.cpp
 
    math/constraint-base.cpp
    math/constraint-bound.cpp
@@ -37,6 +38,8 @@ SET(${LIBRARY_NAME}_SOURCES
 
    invDynForm/invDynForm_util.cpp
    simulator/simulator.cpp
+
+   controller/controller.cpp
   )
 
 ADD_LIBRARY(${LIBRARY_NAME}

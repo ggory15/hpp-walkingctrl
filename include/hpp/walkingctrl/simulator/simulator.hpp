@@ -48,9 +48,11 @@ namespace hpp{
         Simulator(const DevicePtr_t & model, bool detectContactPoint = true);
         ~Simulator(){};
         void createSimulator(InterfaceSetting& setting);
-
-      private: 
         void reset(const double & time, const vector_t& q, const vector_t & v, const double & dt);
+        vector_t getjointAngle() {return q_;}
+        vector_t getjointVelocity() {return v_;}
+
+      private:         
         void getDynamics();
         void updateInequalityData();
 
@@ -67,10 +69,10 @@ namespace hpp{
 
       private:
         InterfaceSetting* interface_setting_;
-        solver::StaggeredProjections* LCP_;
+        solvers::StaggeredProjections* LCP_;
         hpp::pinocchio::CenterOfMassComputationPtr_t com_pinocchio_;
         hpp::pinocchio::BiasComputationPtr_t bias_pinocchio_;    
-        std::vector<contacts::Contact6d> rigidContactConstraints_;
+        std::vector<contacts::ContactInformation> rigidContactConstraints_;
     };       
   }
 }

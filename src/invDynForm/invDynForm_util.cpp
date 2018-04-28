@@ -1,44 +1,19 @@
 # include <hpp/walkingctrl/invDynForm/invDynForm_util.hpp>
 
-#include "pinocchio/algorithm/kinematics.hpp"
-
-using namespace hpp::walkingctrl::math;
 using namespace std;
-using namespace se3;
 
-using hpp::pinocchio::HumanoidRobot;
-using hpp::pinocchio::HumanoidRobotPtr_t;
-using namespace hpp::pinocchio::urdf;
-using hpp::pinocchio::Configuration_t;
-using hpp::pinocchio::CenterOfMassComputation;
-using hpp::pinocchio::BiasComputation;
-using hpp::pinocchio::CenterOfMassComputationPtr_t;
-using hpp::pinocchio::Device;
-using hpp::pinocchio::DevicePtr_t;
 
 namespace hpp{
-    namespace walkingctrl{
-        InvDynForm::InvDynForm(const DevicePtr_t & model) {
-           r_ = model;
-           nq_ = r_->configSize();
-           nv_ = nq_ - 1;
-           na_ = nv_ - 6;    
-           q_.resize(nq_);
-           v_.resize(nv_); 
-           
-           com_pinocchio_ = CenterOfMassComputation::create (r_);
-           com_pinocchio_->add (r_->rootJoint ());
-           bias_pinocchio_ = BiasComputation::create (r_);
-        }
-        
+    namespace walkingctrl{       
         void InvDynForm::createInvDynUtil(InterfaceSetting& setting){
            interface_setting_ = &setting;
 
-        // set Init-posture
-           q_ = interface_setting_->get(InterfaceVectorParam_q0);
-           v_.setZero();
+           q0_.resize(getQsize());
+           v0_.resize(getVsize());
+           v0_.setZero();
+
+           q0_ = interface_setting_->get(InterfaceVectorParam_q0);
                  
-        // set bool
            use_com_gen_ = false;
            enableCapturePoint_ = interface_setting_->get(InterfaceBoolParam_ENABLE_CAPTURE_POINT_LIMITS);
            enableTorqueLimit_ = interface_setting_->get(InterfaceBoolParam_ENABLE_TORQUE_LIMITS);   
@@ -52,32 +27,31 @@ namespace hpp{
 
            support_polygon_computed_ = false;
 
-           this->createInvDynFormulation(q_, v_);
+           this->createInvDynFormulation(q0_, v0_);
         }
-
         void InvDynForm::createInvDynFormulation(const vector_t q, const vector_t v){
             k_ = 0; // number of constraints
             dt_ = this->getSetting().get(InterfaceDoubleParam_dt);
             t_ = 0.0;
-            Md_.resize(nq_-6, nq_-6);
+            Md_.resize(getQsize()-6, getQsize()-6);
             Md_.setZero();
             //baseVelocityFilter -> not use.
 
-            S_T_.resize(nv_, na_);
+            S_T_.resize(getVsize(), getAsize());
             S_T_.setZero();
-            S_T_.bottomLeftCorner(na_,na_).setIdentity();
-            Nc_T_.resize(nv_,nv_);
+            S_T_.bottomLeftCorner(getAsize(),getAsize()).setIdentity();
+            Nc_T_.resize(getVsize(),getVsize());
             Nc_T_.setIdentity();
 
-            ddqMax_.resize(nq_);
+            ddqMax_.resize(getQsize());
             ddqMax_.setZero();
-            ddqStop_.resize(nq_);
+            ddqStop_.resize(getQsize());
             ddqStop_.setZero();
 
-            qMax_ = r_->model().upperPositionLimit;
-            qMin_ = r_->model().lowerPositionLimit;
-            dqMax_ = r_->model().velocityLimit;
-            tauMax_ = r_->model().effortLimit.tail(na_);
+            qMax_ = getRobot()->model().upperPositionLimit;
+            qMin_ = getRobot()->model().lowerPositionLimit;
+            dqMax_ = getRobot()->model().velocityLimit;
+            tauMax_ = getRobot()->model().effortLimit.tail(getAsize());
             
             for (int i=0; i<7; i++){
                 qMax_(i) = 1e100;
@@ -101,10 +75,10 @@ namespace hpp{
             } 
 
             if (enableJointLimit_){
-                index_acc_in_.resize(na_*2);
-                for (int i=0; i<na_*2; i++)
+                index_acc_in_.resize(getAsize()*2);
+                for (int i=0; i<getAsize()*2; i++)
                     index_acc_in_(i) = i;
-                m_in_ += 2*na_;    
+                m_in_ += 2*getAsize();    
             }
             if (enableTorqueLimit_){
                 lb_ = -1.*tauMax_;
@@ -120,23 +94,22 @@ namespace hpp{
                 //TODO
             }
             else{                
-                B_.resize(m_in_, nv_+k_+na_);
+                B_.resize(m_in_, getVsize()+k_+getAsize());
                 B_.setZero();
                 b_.resize(m_in_);
                 b_.setZero();
-                C_.resize(nv_+k_+na_, na_);
-                c_.resize(nv_+k_+na_);
+                C_.resize(getVsize()+k_+getAsize(), getAsize());
+                c_.resize(getVsize()+k_+getAsize());
                 C_.setZero();
                 c_.setZero();
                 if (k_ != 0){
-                    Jc_.resize(k_, nv_);
+                    Jc_.resize(k_, getVsize());
                     dJc_v_.resize(k_);
                     dx_c_.resize(k_);
                     ddx_c_des_.resize(k_);
-                    Jc_Minv_.resize(k_, nv_);
+                    Jc_Minv_.resize(k_, getVsize());
                     Lambda_c_.resize(k_, k_);
-                    Jc_T_pinv_.resize(k_, nv_);
-
+                    Jc_T_pinv_.resize(k_, getVsize());
 
                     Jc_.setZero();
                     dJc_v_.setZero();
@@ -159,7 +132,7 @@ namespace hpp{
 
         }
         void InvDynForm::updateSupportPolygon(){
-            //TODO-ggory inv_dyan_formulation_util line 330~344
+            //TODO-ggory igetVsize()dyan_formulation_util line 330~344
             int ncp = 0;
             contact_points_ = vector3_t::Zero();
             contact_normal_ = vector3_t::Zero();
@@ -194,20 +167,32 @@ namespace hpp{
             matrix_t eye_12(12,12);
             eye_12.setIdentity();
 
-            C_.topLeftCorner(nv_, na_) = Minv_ * Nc_T_*S_T_; // (18*18) * (18 x 18) * (18x12)
-            C_.bottomRightCorner(na_, na_) = eye_12;
-            c_.head(nv_) = -Minv_ * Nc_T_ * h_;
+            C_.topLeftCorner(getVsize(), getAsize()) = Minv_ * Nc_T_*S_T_; // (18*18) * (18 x 18) * (18x12)
+            C_.bottomRightCorner(getAsize(), getAsize()) = eye_12;
+            c_.head(getVsize()) = -Minv_ * Nc_T_ * h_;
         }
         void InvDynForm::setNewSensorData(const double& t, const vector_t& q, const vector_t& v){
             t_ = t;
             this->setPositions(q, false);
             this->setVelocities(v);
-            this->getDynamics();
+
+            computeAllTerms(q_res_, v_res_);
+            updateFrameKinematics();
+
+            com_ = getCOM();
+            M_ = getMassMatrix();
+            h_ = getBiasTerm();
+            J_com_ = getJCOM();
+
+            for (int i=1; i<getVsize(); i++)
+               M_.row(i).head(i) = M_.col(i).head(i);
 
             if (use_rotor_initia_){
-                M_.bottomRightCorner(na_, na_) += Md_;
+                M_.bottomRightCorner(getAsize(), getAsize()) += Md_;
             }
+
             dx_com_ = J_com_ * v; 
+
             if (com_(2) > 0.0)
                 cp_ = com_.head(2) + dx_com_.head(2)/pow(9.81/com_(2), 0.5); 
             else
@@ -215,39 +200,27 @@ namespace hpp{
             this->updateConstrainedDynamics();
         }
         void InvDynForm::setPositions(const vector_t& q, bool updateConstraintReference){
-            q_ = q;
-            r_->currentConfiguration(q_);
-            r_->computeForwardKinematics();
-
-            if (updateConstraintReference){
-                
+            q_res_ = q;
+            updateforwardKinematics(q);
+           
+            if (updateConstraintReference){                
                 this->updateSupportPolygon();
             }
         }
-        void InvDynForm::getDynamics(){
-            com_pinocchio_ ->compute(hpp::pinocchio::Device::COM);
-            com_ = com_pinocchio_->com();
-            com_pinocchio_ ->compute(hpp::pinocchio::Device::JACOBIAN);
-                   
-            J_com_ = com_pinocchio_->jacobian();
-            bias_pinocchio_ ->compute(q_, v_);
-
-            M_ = bias_pinocchio_->M();
-            for (int i=1; i<nv_; i++)
-                M_.row(i).head(i) = M_.col(i).head(i);
-
-            h_ = bias_pinocchio_->nle();
-        }
-
-
         void InvDynForm::addTask(JointPostureTask& task, const double& gain){
             taskstate_.push_back(task);
             w_gain_.push_back(gain);
-
+           
             if (gain < 0.0)
                 cout << "WARN::Wrong w_gain" << endl;
         }
+        bool InvDynForm::existUnilateralContactConstraint(const std::string name){
+             for (vector<contacts::ContactInformation>::iterator iter = rigidContactConstraints_.begin(); iter != rigidContactConstraints_.end(); ++iter){
+                if (name.compare(iter->getName()))
+                    return true;
+            }
 
-
+            return false;
+        }
     }//walkingctrl
 }//hpp`

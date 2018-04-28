@@ -38,7 +38,7 @@ namespace hpp{
             dt_ = interface_setting_->get(InterfaceDoubleParam_dt);
             q_ = interface_setting_->get(InterfaceVectorParam_q0);            
             
-            LCP_ = new solver::StaggeredProjections(nv_, mu_(0));  
+            LCP_ = new solvers::StaggeredProjections(nv_, mu_(0));  
             this->reset(0, q_, v_, dt_);
         }
         void Simulator::reset(const double & time, const vector_t& q, const vector_t & v, const double & dt){

@@ -18,15 +18,13 @@
 #include <iostream>
 
 #include "hpp/walkingctrl/solver/standardQPSolver.hh"
-
-
 #include <boost/test/unit_test.hpp>
 
 using namespace hpp::walkingctrl;
 
 BOOST_AUTO_TEST_SUITE ( BOOST_TEST_MODULE )
 void test(){
-  solver::StandardQpSolver(12, 0);
+  solvers::StandardQpSolver(12, 0);
 }
 
 BOOST_AUTO_TEST_CASE ( build_model )

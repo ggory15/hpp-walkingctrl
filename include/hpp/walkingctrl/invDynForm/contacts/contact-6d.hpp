@@ -1,23 +1,34 @@
 #ifndef __HPP_WALKINGCTRL_CONTACT__
 #define __HPP_WALKINGCTRL_CONTACT__
 
-#include "hpp/walkingctrl/math/constraint-inequality.hpp"
-#include "hpp/walkingctrl/math/constraint-equality.hpp"
+#include <hpp/walkingctrl/fwd.hh>
+
 namespace hpp{
     namespace walkingctrl{
         namespace contacts{
-            class Contact6d{
+            class ContactInformation{
                 public:
                  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-                 typedef math::ConstRefMatrix ConstRefMatrix;
-                 typedef math::ConstRefVector ConstRefVector;
-                 typedef math::Vector2 Vector2;
-                 typedef math::ConstraintInequality ConstraintInequality;
-                 typedef math::ConstraintEquality ConstraintEquality;
+                    ContactInformation(const std::string & name="default", const vector3_t & contactPoint = vector3_t::Zero(), const vector3_t & contactNormal = vector3_t::Zero(), const vector2_t& mu = vector2_t::Zero()) {
+                        name_ = name; 
+                        contactPoint_ = contactPoint;
+                        contactNormal_ = contactNormal;
+                        mu_ = mu_;
+                    };
+                    ~ContactInformation(){}; 
 
-                Contact6d(const std::string & name, ConstRefMatrix contactPoints, ConstRefVector contactNormal, Vector2 mu){};
-                ~Contact6d(){}; 
+                    std::string getName() {return name_;}
+                    vector3_t getContactPoint() {return contactPoint_;}
+                    vector3_t getContactNormal() {return contactNormal_;}
+                    vector2_t getFriectionCoeff() {return mu_;}
+
+                private:
+                    std::string name_;
+                    vector3_t contactPoint_, contactNormal_;
+                    vector2_t mu_;
+
+
             };
         }
     }

@@ -23,15 +23,27 @@
 
 namespace hpp {
   namespace walkingctrl {
-    namespace solver{
+    namespace solvers{
       class StandardQpSolver : public AbstractSolver {
         public: 
           ~StandardQpSolver(){};
 
-          StandardQpSolver(const int & n, const int & m_in, const std::string & solver_type = "qpoase", const double & accuracy = 1e-6, const int & maxIter = 100, const int & verb =0)
+          StandardQpSolver(const int & n, const int & m_in, const std::string & solver_type = "qpoase", const double & accuracy = 1e-6, const int & maxIter = 100, const int & verb =0) 
           : AbstractSolver(n, m_in, solver_type, accuracy, maxIter, verb){}
-        private:
 
+          inline double f_cost(const vector_t& x){
+            vector_t e;
+            e = get_Dmat() * x - get_dvec();
+            return pow(e.norm(), 2);
+          } 
+          inline vector_t f_cost_grad(const vector_t& x){
+            return get_Hmat() * x - get_dDvec();
+          }
+          inline matrix_t f_cost_hess(){
+            return get_Hmat();
+          }
+          inline matrix_t get_linear_inequality_matrix() {return get_ineqMat(); }
+          inline void get_linear_inequality_vectors(vector_t& ub, vector_t& lb){ub = get_upperbound(); lb = get_lowerbound(); }         
       };
     }
   } // namespace walingctrl

@@ -35,6 +35,7 @@ namespace hpp {
     typedef Eigen::Matrix <value_type, 2, 1> vector2_t;
     typedef Eigen::Matrix <value_type, 1, 1> vector1_t;
     typedef Eigen::Matrix <value_type, 3, 1> vector3_t;
+    typedef Eigen::Matrix <value_type, 6, 1> vector6_t;
     typedef Eigen::Matrix <value_type, 3, 3> matrix3_t;
 
     typedef hpp::core::Transform3f Transform3f;
