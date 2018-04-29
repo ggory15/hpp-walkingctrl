@@ -20,9 +20,9 @@
 SET(LIBRARY_NAME ${PROJECT_NAME})
 
 SET(${LIBRARY_NAME}_SOURCES
-#  solver/StandardQpSolver.cpp
-   solver/solver-base.cpp
-   solver/basic-qpoase.cpp
+   #solver/StandardQpSolver.cpp
+   #solver/solver-base.cpp
+   #solver/basic-qpoase.cpp
    solver/abstractsolver.cpp
 
    math/constraint-base.cpp
@@ -33,6 +33,7 @@ SET(${LIBRARY_NAME}_SOURCES
 
    utils/stop-watch.cpp
    utils/statistics.cpp
+   utils/cdd_for_hpp.cpp
 
    interface/Setting.cpp
 

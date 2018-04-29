@@ -1,5 +1,5 @@
 #include <hpp/walkingctrl/invDynForm/invDynForm_util.hpp>
-#include <hpp/walkingctrl/utils/convex_hull_util.hh>
+#include <hpp/walkingctrl/utils/cdd_for_hpp.hh>
 
 using namespace std;
 
@@ -157,17 +157,29 @@ namespace hpp{
                
             }
             else{
-                //double avg_z = contact_points_.row(2).mean();
+                double avg_z = contact_points_.row(2).mean();
                 
-                /*if ( max(contact_points_.row(2).maxCoeff() - avg_z, abs(contact_points_.row(2).minCoeff() - avg_z)) < 1e-3) 
+                if ( max(contact_points_.row(2).maxCoeff() - avg_z, abs(contact_points_.row(2).minCoeff() - avg_z)) < 1e-3) 
                 {
-                    
-                }
-                */            
-            }
-            if (ncp == 4){
-                cout << "GIWC" << endl; 
+                    if (ncp == 1){
+                        matrix_t test_c(2,2);
+                        test_c(0, 0) = 0.2036;
+                        test_c(1, 0) = 0.204957;
+                        test_c(0, 1) = 0.540994;
+                        test_c(1, 1) = -0.43128;
 
+                        vector_t m_h;
+                        matrix_t m_H;
+
+                        compute_convex_hull(test_c, m_H, m_h);
+
+                        cout << "mh" << m_h << endl;
+                        cout << "MH" << m_H << endl; 
+                    }
+
+
+                }
+                            
             }
             support_polygon_computed_ = true;
 

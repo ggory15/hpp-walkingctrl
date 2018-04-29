@@ -49,6 +49,9 @@ namespace hpp {
     typedef hpp::core::DevicePtr_t DevicePtr_t;
     typedef Eigen::Quaternion<double> quaternion_t;
 
+    typedef Eigen::Ref<matrix_t>    Ref_matrix_t;
+    typedef const Eigen::Ref<const matrix_t>    & CRef_matrix_t;
+
   } // namespace walingctrl
 } // namespace hpp
 
